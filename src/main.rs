@@ -17,12 +17,14 @@ fn main() {
 
     bench::<mutexes::Std>(&options);
     bench::<mutexes::ParkingLot>(&options);
+    bench::<mutexes::PriorityInheritingLock>(&options);
     bench::<mutexes::Spin>(&options);
     bench::<mutexes::AmdSpin>(&options);
 
     println!();
     bench::<mutexes::Std>(&options);
     bench::<mutexes::ParkingLot>(&options);
+    bench::<mutexes::PriorityInheritingLock>(&options);
     bench::<mutexes::Spin>(&options);
     bench::<mutexes::AmdSpin>(&options);
 }
@@ -133,6 +135,15 @@ mod mutexes {
     pub(crate) type ParkingLot = parking_lot::Mutex<u32>;
     impl Mutex for ParkingLot {
         const LABEL: &'static str = "parking_lot::Mutex";
+        fn with_lock(&self, f: impl FnOnce(&mut u32)) {
+            let mut guard = self.lock();
+            f(&mut guard)
+        }
+    }
+
+    pub(crate) type PriorityInheritingLock = priority_inheriting_lock::PriorityInheritingLock<u32>;
+    impl Mutex for PriorityInheritingLock {
+        const LABEL: &'static str = "priority_inheriting_lock::PriorityInheritingLock";
         fn with_lock(&self, f: impl FnOnce(&mut u32)) {
             let mut guard = self.lock();
             f(&mut guard)

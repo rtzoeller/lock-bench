@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 crossbeam-utils = "0.7"
 parking_lot = "0.10"
+priority-inheriting-lock = "0.2.1"
 spin = "0.5"
